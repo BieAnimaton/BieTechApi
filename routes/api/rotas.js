@@ -1,16 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 
 const UsuarioControlador = require("../../controladores/UsuariosControlador");
 
-// Load input validation
-const validateLoginInput = require("../../validation/entrar");
+function verificarJWT(req, res, next) {
+  const token = req.headers['x-access-token'];
+  jwt.verify(token, require("../../config/keys").secretOrKey, (err, decoded) => {
+    if (err) return res.status(401).end();
 
-
+    req.usuarioNome = decoded.usuarioNome;
+    next();
+  })
+}
 
 // ROTAS
 // Rota api/usuarios/listar -- Listar usuários -- Acesso público
@@ -19,72 +23,29 @@ router.get("/listar", UsuarioControlador.index);
 // Rota api/usuarios/listar/:id -- Listar usuário pelo ID -- Acesso público
 router.get("/listar/:id", UsuarioControlador.index_by_id);
 
-// Rpta api/usuario/registrar -- Registrar novo usuário -- Rota pública
+// Rota api/usuario/registrar -- Registrar novo usuário -- Rota pública
 router.post("/registrar", UsuarioControlador.create);
 
 // Rpta api/usuario/alterar/:id -- Alterar usuário do sistema pelo ID -- Rota pública
 router.put("/alterar/:id", UsuarioControlador.update);
 
-// Rpta api/usuario/delete/:id -- Deletar usuário do sistema pelo ID -- Rota pública
+// Rota api/usuario/delete/:id -- Deletar usuário do sistema pelo ID -- Rota pública
 router.delete("/deletar/:id", UsuarioControlador.delete);
 
+// Rpta api/usuario/enter -- Entrar com email e senha do usuário -- Rota pública
+router.post("/entrar", UsuarioControlador.enter);
 
+router.get("/obterUsuario", (req, res, next) => {
+  const token = req.headers['x-access-token'];
 
-
-// @route POST api/usuarios/entrar
-// @desc Login user and return JWT token
-// @access Public
-router.post("/entrar", (req, res) => {
-  // Form validation
-
-  const { errors, isValid } = validateLoginInput(req.body);
-
-  // Check validation
-  if (!isValid) {
-    return res.status(400).json(errors);
+  try {
+    const decoded = jwt.verify(token, require("../../config/keys").secretOrKey);
+    req.usuarioInfo = decoded;
+    next()
+    res.json({"Token": "válido", "nome": decoded})
+  } catch {
+    res.json("Token inválido ou expirado");
   }
-
-  const email = req.body.email;
-  const senha = req.body.senha;
-
-  // Find user by email
-  Usuario.findOne({ email }).then(user => {
-    // Check if user exists
-    if (!user) {
-      return res.status(404).json({ emailnotfound: "Email not found" });
-    }
-
-    // Check password
-    bcrypt.compare(password, user.senha).then(isMatch => {
-      if (isMatch) {
-        // User matched
-        // Create JWT Payload
-        const payload = {
-          id: user.id,
-          name: user.nome
-        };
-
-        // Sign token
-        jwt.sign(
-          payload,
-          keys.secretOrKey,
-          {
-            expiresIn: 31556926 // 1 year in seconds
-          },
-          (err, token) => {
-            res.json({
-              success: true,
-              token: "Bearer " + token
-            });
-          }
-        );
-      } else {
-        return res
-          .status(400)
-          .json({ passwordincorrect: "Password incorrect" });
-      }
-    });
-  });
-});
+})
 
 module.exports = router;
