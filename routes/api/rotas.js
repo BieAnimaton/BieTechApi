@@ -35,17 +35,7 @@ router.delete("/deletar/:id", UsuarioControlador.delete);
 // Rpta api/usuario/enter -- Entrar com email e senha do usuário -- Rota pública
 router.post("/entrar", UsuarioControlador.enter);
 
-router.get("/obterUsuario", (req, res, next) => {
-  const token = req.headers['x-access-token'];
+router.get("/obterUsuario", UsuarioControlador.obterDados);
 
-  try {
-    const decoded = jwt.verify(token, require("../../config/keys").secretOrKey);
-    req.usuarioInfo = decoded;
-    next()
-    res.json({"Token": "válido", "nome": decoded})
-  } catch {
-    res.json("Token inválido ou expirado");
-  }
-})
 
 module.exports = router;
