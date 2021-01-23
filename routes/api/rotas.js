@@ -1,20 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const keys = require("../../config/keys");
 const passport = require("passport");
-const jwt = require("jsonwebtoken");
 
 const UsuarioControlador = require("../../controladores/UsuariosControlador");
-
-function verificarJWT(req, res, next) {
-  const token = req.headers['x-access-token'];
-  jwt.verify(token, require("../../config/keys").secretOrKey, (err, decoded) => {
-    if (err) return res.status(401).end();
-
-    req.usuarioNome = decoded.usuarioNome;
-    next();
-  })
-}
 
 // ROTAS
 // Rota api/usuarios/listar -- Listar usuários -- Acesso público
@@ -35,7 +23,9 @@ router.delete("/deletar/:id", UsuarioControlador.delete);
 // Rpta api/usuario/enter -- Entrar com email e senha do usuário -- Rota pública
 router.post("/entrar", UsuarioControlador.enter);
 
-router.get("/obterUsuario", UsuarioControlador.obterDados);
+router.get("/obterDados", UsuarioControlador.obterDados);
+
+router.get("/obterCookie", UsuarioControlador.obterCookie);
 
 
 module.exports = router;

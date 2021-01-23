@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cookieParser = require('cookie-parser');
 
 // Carregar as validações de Entrada
 const validateRegisterInput = require("../validation/registrar");
@@ -11,6 +12,8 @@ const UsuarioSchema = require("../models/Usuario");
 
 // Conectando à tabela
 const Usuario = mongoose.model("usuarios");
+
+const SENHA = require("../config/keys").jwtSecretKey;
 
 module.exports = {
 
@@ -89,8 +92,10 @@ module.exports = {
               nome: user.nome
             }
 
-            const token = jwt.sign((payload), require("../config/keys").secretOrKey, { expiresIn: 300 });
-            return res.json({auth: true, "estado": "conectado com sucesso!", "token": token})
+            const token = jwt.sign((payload), SENHA, { expiresIn: 300 });
+            res.cookie('ACCESS_COOKIE', token, { expiresIn: 500 * 1000 + Date.now(), httpOnly: true })
+
+            return res.json({auth: true, "token": token, "cookies": req.cookies})
         });
       });
     },
@@ -100,12 +105,25 @@ module.exports = {
       const token = req.headers['x-access-token'];
     
       try {
-        const decoded = jwt.verify(token, require("../../config/keys").secretOrKey);
-        req.usuarioInfo = decoded;
+        const decoded = jwt.verify(token, SENHA);
+
+        req.id = decoded.id;
+        req.nome = decoded.nome;
+
         next()
-        res.json({"Token": "válido", "dados": decoded})
+        res.json({"auth": "true", "decodificado": decoded})
       } catch {
-        res.json("Token inválido ou expirado");
+        res.json({auth: false, "Token": "inválido ou expirado"});
+      }
+    },
+
+    async obterCookie (req, res) {
+      try {
+        const cookies = req.cookies;
+
+        res.json({"cookies": cookies});
+      } catch {
+        res.json({"Cookie": "nenhum cookie"});
       }
     },
 

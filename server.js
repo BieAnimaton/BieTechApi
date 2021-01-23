@@ -2,7 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const cors = require("cors")
+const cors = require("cors");
+const cookieParser = require('cookie-parser');
 
 // Rotas
 const rotas = require("./routes/api/rotas");
@@ -17,6 +18,7 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(cors());
+app.use(cookieParser());
 
 // DB Config
 const db = require("./config/keys").mongoURI;
