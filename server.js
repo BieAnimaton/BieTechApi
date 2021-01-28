@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const cors = require("cors");
-const morgan = require('morgan');
+//const morgan = require('morgan');
 
 // Rotas
 const rotas = require("./routes/api/rotas");
@@ -18,7 +18,7 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(cors());
-morgan('dev');
+//morgan('dev');
 
 // DB Config
 const db = require("./config/keys").mongoURI;
