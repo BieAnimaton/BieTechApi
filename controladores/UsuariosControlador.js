@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const cookieParser = require('cookie-parser');
 
 // Carregar as validações de Entrada
 const validateRegisterInput = require("../validation/registrar");
@@ -22,7 +21,12 @@ module.exports = {
 
       const query = { nome: {$regex: req.param('pesquisa')} }
 
-      const usuarios = await Usuario.find(query);
+      let usuarios = null;
+      try {
+        usuarios = await Usuario.find(query);
+      } catch {
+        usuarios = await Usuario.find();
+      }
 
       return res.json(usuarios);
     },

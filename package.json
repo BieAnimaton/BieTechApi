@@ -16,7 +16,6 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "concurrently": "^4.0.1",
-    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "is-empty": "^1.2.0",

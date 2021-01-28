@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 const cors = require("cors");
-const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 
 // Rotas
@@ -19,7 +18,6 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(cors());
-app.use(cookieParser());
 morgan('dev');
 
 // DB Config
