@@ -28,6 +28,7 @@
     "validator": "^10.9.0"
   },
   "devDependencies": {
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.7"
   }
 }

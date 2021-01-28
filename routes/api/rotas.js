@@ -23,9 +23,4 @@ router.delete("/deletar/:id", UsuarioControlador.delete);
 // Rpta api/usuario/enter -- Entrar com email e senha do usuário -- Rota pública
 router.post("/entrar", UsuarioControlador.enter);
 
-router.get("/obterDados", UsuarioControlador.obterDados);
-
-router.get("/obterCookie", UsuarioControlador.obterCookie);
-
-
 module.exports = router;

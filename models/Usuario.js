@@ -19,12 +19,12 @@ const UsuarioSchema = new Schema({
     required: true
   },
   sexo: {
-    type: Boolean,
+    type: String,
   },
   dataNascimento: {
     type: Date,
   },
-  continentAtual: {
+  paisAtual: {
     type: String,
   },
   mensagensUsuario: {

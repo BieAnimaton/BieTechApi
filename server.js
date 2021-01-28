@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 // Rotas
 const rotas = require("./routes/api/rotas");
@@ -19,6 +20,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(cors());
 app.use(cookieParser());
+morgan('dev');
 
 // DB Config
 const db = require("./config/keys").mongoURI;
@@ -41,6 +43,12 @@ require("./config/passport")(passport);
 
 // Routes
 app.use("/api/usuarios", rotas);
+app.get("/", (req, res) => {
+  res.json({ "mensagem": "parece que o servidor está funcionando!" });
+});
+app.use("*", (req, res) => {
+  res.json({ "mensagem":"rota não encontrado" });
+});
 
 const port = process.env.PORT || 5000;
 

@@ -19,9 +19,12 @@ module.exports = {
 
     // Rota api/usuarios/listar -- Listar usuários -- Acesso público
     async index (req, res) {
-        const usuarios = await Usuario.find({});
 
-        return res.json(usuarios);
+      const query = { nome: {$regex: req.param('pesquisa')} }
+
+      const usuarios = await Usuario.find(query);
+
+      return res.json(usuarios);
     },
 
     // Rota api/usuarios/listar/:id -- Listar usuário pelo ID -- Acesso público
@@ -93,38 +96,10 @@ module.exports = {
             }
 
             const token = jwt.sign((payload), SENHA, { expiresIn: 300 });
-            res.cookie('ACCESS_COOKIE', token, { expiresIn: 500 * 1000 + Date.now(), httpOnly: true })
 
-            return res.json({auth: true, "token": token, "cookies": req.cookies})
+            return res.json({ "token": token })
         });
       });
-    },
-
-    // Rpta api/usuarios/obterUsuario -- Obtém dados do usuário no token JWT -- Rota particular
-    async obterDados (req, res, next) {
-      const token = req.headers['x-access-token'];
-    
-      try {
-        const decoded = jwt.verify(token, SENHA);
-
-        req.id = decoded.id;
-        req.nome = decoded.nome;
-
-        next()
-        res.json({"auth": "true", "decodificado": decoded})
-      } catch {
-        res.json({auth: false, "Token": "inválido ou expirado"});
-      }
-    },
-
-    async obterCookie (req, res) {
-      try {
-        const cookies = req.cookies;
-
-        res.json({"cookies": cookies});
-      } catch {
-        res.json({"Cookie": "nenhum cookie"});
-      }
     },
 
     // Rpta api/usuarios/alterar/:id -- Alterar usuário do sistema pelo ID -- Rota pública
